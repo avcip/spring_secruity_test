@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.task_hou.mapper.CaseMapper">
+
+    <select id="selectByCategory" resultType="com.task_hou.entity.Case">
+        SELECT * FROM cases 
+        <where>
+            <if test="category != null and category != ''">
+                category = #{category}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectByAdminId" resultType="com.task_hou.entity.Case">
+        SELECT * FROM cases 
+        WHERE admin_id = #{adminId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectHotCases" resultType="com.task_hou.entity.Case">
+        SELECT * FROM cases 
+        ORDER BY view_count DESC
+        LIMIT #{topN}
+    </select>
+
+    <select id="getUserCaseFavorites" parameterType="java.lang.Long" resultType="java.util.Map">
+        SELECT 
+            c.* 
+        FROM 
+            `cases` c  <!-- 关键修正：用反引号包裹保留字表名 -->
+        JOIN 
+            favorites uf ON c.case_id = uf.case_id
+        WHERE 
+            uf.user_id = #{userId}
+    </select>
+</mapper>

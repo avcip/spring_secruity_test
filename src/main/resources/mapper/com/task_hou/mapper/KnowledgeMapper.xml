@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.task_hou.mapper.KnowledgeMapper">
+    <!-- ... 其他 SQL 语句 ... -->
+    
+    <!-- 获取用户收藏的知识内容（修正字段匹配问题） -->
+    <select id="getUserKnowledgeFavorites" parameterType="java.lang.Long" resultType="java.util.Map">
+        SELECT 
+            k.knowledge_id AS knowledgeId,  <!-- 对应 Knowledge 实体的 knowledgeId 字段 -->
+            k.topic AS topic,               <!-- 对应 Knowledge 实体的 topic 字段（修正原 title 为 topic） -->
+            k.view_count AS viewCount,      <!-- 对应 Knowledge 实体的 viewCount 字段 -->
+            f.create_time AS createTime     <!-- 对应 favorites 表的收藏时间 -->
+        FROM 
+            favorites f 
+        LEFT JOIN knowledge k ON f.knowledge_id = k.knowledge_id 
+        WHERE 
+            f.user_id = #{userId}
+            AND f.knowledge_id IS NOT NULL  <!-- 仅筛选知识类型收藏 -->
+        ORDER BY 
+            f.create_time DESC  <!-- 按收藏时间倒序排列 -->
+    </select>
+</mapper>
+<!-- ... existing code ... -->

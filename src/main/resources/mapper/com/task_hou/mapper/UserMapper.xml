@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.task_hou.mapper.UserMapper">
+
+    <!-- 获取用户收藏内容（适配响应体：knowledge_id/topic/view_count/create_time） -->
+    <select id="getUserFavorites" resultType="java.util.Map">
+        SELECT 
+            k.knowledge_id AS knowledgeId,  <!-- 对应响应体 knowledge_id -->
+            k.title AS topic,               <!-- 对应响应体 topic（假设 knowledge 表的 title 是主题） -->
+            k.view_count AS viewCount,      <!-- 对应响应体 view_count -->
+            f.create_time AS createTime     <!-- 对应响应体 create_time -->
+        FROM favorites f
+        <!-- 仅关联 knowledge 表（根据需求，若需支持其他类型可扩展） -->
+        LEFT JOIN knowledge k ON f.knowledge_id = k.knowledge_id
+        WHERE f.user_id = #{userId}
+        <!-- 类型筛选（仅查询 knowledge 类型） -->
+        <if test="type != null and type == 'knowledge'">
+            AND f.knowledge_id IS NOT NULL
+        </if>
+        ORDER BY f.create_time DESC
+    </select>
+
+</mapper>

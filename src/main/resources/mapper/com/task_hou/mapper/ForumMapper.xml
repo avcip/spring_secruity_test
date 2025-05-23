@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.task_hou.mapper.ForumMapper">
+    <!-- 分页查询帖子列表（支持主题搜索） -->
+    <select id="selectPageByTopic" resultType="com.task_hou.entity.Forum">
+        SELECT 
+            forum_id, 
+            topic, 
+            post_content, 
+            image_urls, 
+            like_count, 
+            comment_count, 
+            view_count, 
+            post_time, 
+            user_id 
+        FROM forums 
+        <where>
+            <if test="topic != null and topic != ''">
+                AND topic LIKE CONCAT('%', #{topic}, '%')
+            </if>
+        </where>
+        ORDER BY post_time DESC
+    </select>
+
+    <!-- 获取用户收藏的论坛内容 -->
+    <select id="getUserForumFavorites" parameterType="java.lang.Long" resultType="java.util.Map">
+        SELECT 
+            f.forum_id, 
+            f.topic,
+            f.post_content,
+            f.post_time
+        FROM 
+            forums f
+        LEFT JOIN favorites fs ON f.forum_id = fs.forum_id
+        WHERE 
+            fs.user_id = #{userId}
+    </select>
+</mapper>
